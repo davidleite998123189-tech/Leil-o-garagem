@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auction Tycoon</title>
+    <style>
+        body { margin: 0; font-family: sans-serif; background: #1a1a2e; color: white; overflow: hidden; }
+        .screen { display: none; width: 100vw; height: 100vh; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+        .active { display: flex; }
+        button { cursor: pointer; border: none; font-weight: bold; border-radius: 12px; transition: 0.2s; padding: 15px; width: 80%; margin: 5px; }
+        .btn-bid { background: #4cd137; color: white; }
+        .btn-stop { background: #e94560; color: white; }
+        #box { font-size: 80px; background: #16213e; border: 4px dashed #485460; padding: 20px; border-radius: 20px; margin: 15px; }
+        .bid-card { background: #0f3460; padding: 20px; border-radius: 15px; border: 2px solid #f1c40f; min-width: 250px; }
+    </style>
+</head>
+<body>
+
+    <div id="scr-home" class="screen active">
+        <h1 style="color: #e94560;">🏠 MINHA SEDE</h1>
+        <p>Saldo: <span style="color:#4cd137; font-size: 24px;">$<span id="h-saldo">5000</span></span></p>
+        <button style="background:#f1c40f;" onclick="irPara('scr-map')">🗺️ EXPLORAR CIDADE</button>
+    </div>
+
+    <div id="scr-map" class="screen" style="background: #0f3460;">
+        <h2>📍 ESCOLHA UM LOCAL</h2>
+        <button style="background:#16213e; color:white; border: 1px solid #4cd137;" onclick="iniciarLeilao('Porto', 50, 'Ex-Pescador')">⚓ Porto ($50 taxa)</button>
+        <button style="background:#16213e; color:white; border: 1px solid #e94560;" onclick="iniciarLeilao('Elite', 500, 'Magnata')">💎 Elite ($500 taxa)</button>
+        <button style="background:#95a5a6;" onclick="irPara('scr-home')">VOLTAR</button>
+    </div>
+
+    <div id="scr-auction" class="screen">
+        <h3 id="a-loc" style="margin:0;">Local</h3>
+        <div id="box">📦</div>
+        <div class="bid-card">
+            <small>LANCE ATUAL</small>
+            <div id="a-price" style="font-size: 40px; color: #f1c40f;">$0</div>
+            <div id="a-lider">Líder: Ninguém</div>
+        </div>
+        <button class="btn-bid" onclick="darLance()">COBRIR (+100)</button>
+        <button class="btn-stop" onclick="finalizar()">DESISTIR / SAIR</button>
+    </div>
+
+    <script>
+        let saldo = 5000;
+        let lance = 0;
+        let valorItem = 0;
+        let lider = "";
+
+        function irPara(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            document.getElementById('h-saldo').innerText = saldo;
+        }
+
+        function iniciarLeilao(local, taxa, dono) {
+            if(saldo < taxa) return alert("Sem dinheiro!");
+            saldo -= taxa;
+            valorItem = Math.floor(Math.random() * 2000) + 100;
+            lance = 100;
+            lider = "Vendedor";
+            document.getElementById('a-loc').innerText = local;
+            atualizarUI();
+            irPara('scr-auction');
+        }
+
+        function darLance() {
+            lance += 100;
+            lider = "Você";
+            atualizarUI();
+            setTimeout(() => {
+                if(lance < valorItem && Math.random() > 0.4) {
+                    lance += 150;
+                    lider = "Seu Jorge";
+                    atualizarUI();
+                }
+            }, 700);
+        }
+
+        function finalizar() {
+            if(lider === "Você") {
+                saldo -= lance; // SÓ COBRA SE VENCER
+                saldo += valorItem; // REVENDA
+                alert("Ganhou! Pagou " + lance + " e o item valia " + valorItem);
+            } else { alert("Perdeu!"); }
+            irPara('scr-home');
+        }
+
+        function atualizarUI() {
+            document.getElementById('a-price').innerText = "$" + lance;
+            document.getElementById('a-lider').innerText = "Líder: " + lider;
+        }
+    </script>
+</body>
+  </html>
+  
